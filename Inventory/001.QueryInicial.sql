@@ -50,6 +50,18 @@ CREATE TABLE Producto.Categoria(
 ) WITH(SYSTEM_VERSIONING = ON (HISTORY_TABLE = Producto.Categoria_Historial))
 GO
 
+SELECT CURRENT_USER
+
+SET IDENTITY_INSERT Producto.Categoria ON
+INSERT INTO Producto.Categoria(CategoriaID,Nombre,UsuarioCrea,UsuarioModifica)
+SELECT pc.ProductCategoryID, pc.Name, CURRENT_USER, CURRENT_USER 
+FROM AdventureWorks2019.Production.ProductCategory AS pc
+WHERE pc.ProductCategoryID <> 5
+SET IDENTITY_INSERT Producto.Categoria OFF
+GO
+
+-- SELECT * FROM Producto.Categoria
+-- DELETE FROM Producto.Categoria
 
 CREATE TABLE Producto.SubCategoria(
 	SubCategoriaID INT IDENTITY PRIMARY KEY NOT NULL,
@@ -64,6 +76,19 @@ CREATE TABLE Producto.SubCategoria(
 	PERIOD FOR SYSTEM_TIME (FechaCreacion,FechaModifica)
 )WITH(SYSTEM_VERSIONING = ON (HISTORY_TABLE = Producto.SubCategoria_Historial))
 GO
+
+-- Informacion de la tabla
+-- SP_HELP 'Producto.SubCategoria'
+
+SET IDENTITY_INSERT Producto.SubCategoria ON
+INSERT INTO Producto.SubCategoria(SubCategoriaID,Nombre,UsuarioCrea,UsuarioModifica,CategoriaID)
+SELECT ps.ProductSubcategoryID, ps.Name, CURRENT_USER, CURRENT_USER, ps.ProductCategoryID
+FROM AdventureWorks2019.Production.ProductSubcategory AS ps
+SET IDENTITY_INSERT Producto.SubCategoria OFF
+GO
+
+--SELECT * FROM Producto.SubCategoria
+--DELETE FROM Producto.SubCategoria
 
 CREATE TABLE Producto.Presentacion(
 	PresentacionID INT IDENTITY PRIMARY KEY NOT NULL,
@@ -120,7 +145,6 @@ CREATE TABLE Producto.Modelo (
 	PERIOD FOR SYSTEM_TIME(FechaCrea,FechaModifica)
 ) WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = Producto.Modelo_Historial))
 GO
-
 
 CREATE TABLE Costo.TipoImpuesto (
 	TipoImpuestoID INT IDENTITY PRIMARY KEY NOT NULL,
